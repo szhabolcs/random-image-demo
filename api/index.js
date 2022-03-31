@@ -35,7 +35,7 @@ app.post('/:name', function (req, res) {
 //   res.send('Hello ' + req.params.name);
 });
 
-app.get('/all-link', (req, res) => {
+app.get('/all-links', (req, res) => {
   conn.query(
     `SELECT * FROM likes`,
     function(err, results) {
@@ -52,7 +52,7 @@ app.get('/get-link-by-id/:id', (req, res) => {
     [req.params.id],
     function(err, results) {
         console.log(err);
-        console.log(results);
+        //console.log(results);
         res.send(results);
     }
 );
@@ -64,7 +64,7 @@ app.get('/max-likes/', (req, res) => {
     `SELECT link FROM likes WHERE nr = (SELECT MAX(nr) FROM likes)`,
     function(err, results) {
         console.log(err);
-        console.log(results);
+        //console.log(results);
         res.send(results);
     }
 );

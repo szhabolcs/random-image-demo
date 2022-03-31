@@ -24,7 +24,7 @@ const conn = mysql.createConnection({
 app.post('/:name', function (req, res) {
     // with placeholder
     conn.query(
-        `INSERT INTO likes (link) VALUES (?)`,
+        `INSERT INTO likes (link,nr) VALUES (?,0)`,
         [req.params.name],
         function(err, results) {
             console.log(err);
@@ -33,7 +33,43 @@ app.post('/:name', function (req, res) {
         }
     );
 //   res.send('Hello ' + req.params.name);
-
 });
+
+app.get('/all-link', (req, res) => {
+  conn.query(
+    `SELECT * FROM likes`,
+    function(err, results) {
+        console.log(err);
+        res.send(results);
+    }
+);
+});
+
+app.get('/get-link-by-id/:id', (req, res) => {
+
+  conn.query(
+    `SELECT * FROM likes WHERE id = ?`,
+    [req.params.id],
+    function(err, results) {
+        console.log(err);
+        console.log(results);
+        res.send(results);
+    }
+);
+});
+
+app.get('/max-likes/', (req, res) => {
+
+  conn.query(
+    `SELECT link FROM likes WHERE nr = (SELECT MAX(nr) FROM likes)`,
+    function(err, results) {
+        console.log(err);
+        console.log(results);
+        res.send(results);
+    }
+);
+});
+
+
 
 app.listen(port);

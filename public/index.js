@@ -64,11 +64,10 @@ $(document).ready(function() {
         var id = button.attr("data-id");
         var liked = button.attr("data-liked");
 
-        var url = "http://localhost:8080/like/" + id;
-
         if (liked == "false") {
             button.css("color", "red");
             button.attr("data-liked", "true");
+            var url = "http://localhost:8080/like/" + id;
             $.ajax({
                 method: 'POST',
                 url: url,
@@ -79,6 +78,14 @@ $(document).ready(function() {
         } else {
             button.attr("data-liked", "false");
             button.css("color", "white");
+            var url = "http://localhost:8080/unlike/" + id;
+            $.ajax({
+                method: 'POST',
+                url: url,
+                success: function() {
+                    console.log('succes!');
+                }
+            })
         }
     }
 

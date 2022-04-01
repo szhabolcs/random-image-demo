@@ -64,7 +64,7 @@ $(document).ready(function() {
         var id = button.attr("data-id");
         var liked = button.attr("data-liked");
 
-        var url = "http://localhost:8080/like/:" + id;
+        var url = "http://localhost:8080/like/" + id;
 
         if (liked == "false") {
             button.css("color", "red");

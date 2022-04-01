@@ -60,11 +60,11 @@ app.get('/all-likes', async (req, res) => {
   let rows, fields;
 
   if(order.toLowerCase() === 'asc' ){
-    [rows, fields] = await conn.execute(`SELECT * FROM likes ORDER BY nr ASC`);
+    [rows, fields] = await conn.execute(`SELECT * FROM likes WHERE nr>0 ORDER BY nr ASC`);
     res.send(rows);
   }
   else if(order.toLowerCase() === 'desc'){
-    [rows, fields] = await conn.execute(`SELECT * FROM likes ORDER BY nr DESC`);
+    [rows, fields] = await conn.execute(`SELECT * FROM likes WHERE nr>0 ORDER BY nr DESC`);
     res.send(rows);
   }
   else{

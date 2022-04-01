@@ -1,7 +1,7 @@
 const cors = require('cors');
 const express = require('express');
 const app = express();
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 // use local .env
 if (process.env.NODE_ENV !== "production") {
@@ -11,64 +11,51 @@ if (process.env.NODE_ENV !== "production") {
 app.use(express.json());
 
 const port = process.env.PORT;
+let conn;
 
 // create the connection to database
-const conn = mysql.createConnection({
+(async function() {
+	conn = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
   });
+})();
 
 
-app.post('/:name', function (req, res) {
-    // with placeholder
-    conn.query(
-        `INSERT INTO likes (link,nr) VALUES (?,?)`,
-        [req.params.name, 0],
-        function(err, results) {
-            console.log(err);
-            console.log(results);
-            res.sendStatus(200);
-        }
-    );
-//   res.send('Hello ' + req.params.name);
-});
-
-app.get('/all-links', (req, res) => {
-  conn.query(
-    `SELECT * FROM likes`,
-    function(err, results) {
-        console.log(err);
-        res.send(results);
+app.post('/like/:id', async function (req, res) {
+    let {id} = req.params;
+    let rows, fields;
+    [rows, fields] = await conn.execute(`SELECT id FROM likes WHERE id=?`, [id]);
+    if(rows.length === 0){
+        [rows, fields] = await conn.execute(`INSERT INTO likes (id,nr) VALUES (?,?)`, [id, 1]);
+        console.log("Added! " + id );
     }
-);
-});
-
-app.get('/get-link-by-id/:id', (req, res) => {
-
-  conn.query(
-    `SELECT * FROM likes WHERE id = ?`,
-    [req.params.id],
-    function(err, results) {
-        console.log(err);
-        //console.log(results);
-        res.send(results);
+    else{
+      [rows, fields] = await conn.execute(`UPDATE likes SET nr = nr + 1 WHERE id  = (?)`, [id]);
+      console.log("updated " + id );
     }
-);
+    res.sendStatus(200);
 });
 
-app.get('/max-likes/', (req, res) => {
+app.get('/all-likes', async (req, res) => {
+  let {order} = req.query;
+  let rows, fields;
 
-  conn.query(
-    `SELECT link FROM likes WHERE nr = (SELECT MAX(nr) FROM likes) ORDER BY id DESC LIMIT 1`,
-    function(err, results) {
-        console.log(err);
-        //console.log(results);
-        res.send(results);
-    }
-);
+  if(order.toLowerCase() === 'asc' ){
+    [rows, fields] = await conn.execute(`SELECT * FROM likes ORDER BY nr ASC`);
+    res.send(rows);
+  }
+  else if(order.toLowerCase() === 'desc'){
+    [rows, fields] = await conn.execute(`SELECT * FROM likes ORDER BY nr DESC`);
+    res.send(rows);
+  }
+  else{
+    res.sendStatus(400);
+  }
 });
+
 
 
 

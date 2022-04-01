@@ -1,5 +1,25 @@
 $(document).ready(function() {
 
+    function appendImages(photo) {
+        var description = photo.description;
+
+        if (description == null) {
+            description = "no description";
+        }
+        $("#result").append(`
+            <div class="image">
+                <div class="image-wrapper">
+                    <img src="${photo.urls.regular}"/>
+                    <button data-id="${photo.id}" data-liked="false" class="heart"><i class="fa-solid fa-heart"></i></button>
+                </div>
+                <ul>
+                    <li> likes: ${photo.likes} </li>
+                    <li> description: ${description} </li>
+                </ul>
+            </div>
+            `);
+    }
+
     $("#load").click(function() {
         var pageNr = Math.floor(Math.random() * 50);
 
@@ -12,23 +32,7 @@ $(document).ready(function() {
             url: url,
             success: function(data) {
                 data.forEach(photo => {
-                    var description = photo.description;
-
-                    if (description == null) {
-                        description = "no description";
-                    }
-                    $("#result").append(`
-                        <div class="image">
-                            <div class="image-wrapper">
-                                <img src="${photo.urls.regular}"/>
-                                <button class="heart"><i class="fa-solid fa-heart"></i></button>
-                            </div>
-                            <ul>
-                                <li> likes: ${photo.likes} </li>
-                                <li> description: ${description} </li>
-                            </ul>
-                        </div>
-                        `);
+                    appendImages(photo);
                 });
             }
         });
@@ -48,28 +52,45 @@ $(document).ready(function() {
             url: url,
             success: function(data) {
                 data.results.forEach(photo => {
-                    var description = photo.description;
-
-                    if (description == null) {
-                        description = "no description";
-                    }
-                    $("#result").append(`
-                        <div class="image">
-                            <img src="${photo.urls.regular}"/>
-                            <button class="heart"><i class="fa fa-heart"></button>
-                        </div>
-                        <div>
-                            <ul>
-                                <li> likes: ${photo.likes} </li>
-                                <li> description: ${description} </li>
-                            </ul>
-                        </div>
-    
-                        `);
+                    appendImages(photo);
                 });
             }
         });
 
+    });
+
+    function postLikedImage(button) {
+
+        var id = button.attr("data-id");
+        var liked = button.attr("data-liked");
+
+        var url = "http://localhost:8080/like/:" + id;
+
+        if (liked == "false") {
+            button.css("color", "red");
+            button.attr("data-liked", "true");
+            $.ajax({
+                method: 'POST',
+                url: url,
+                success: function() {
+                    console.log('succes!');
+                }
+            })
+        } else {
+            button.attr("data-liked", "false");
+            button.css("color", "white");
+        }
+    }
+
+    $("#result").on("dblclick", ".image-wrapper", function(e) {
+        let child = $(e.currentTarget);
+        child = $(child.children(".heart")[0]);
+        postLikedImage(child);
+    })
+
+    $("#result").on("click", ".heart", function(e) {
+        let button = $(e.currentTarget);
+        postLikedImage(button);
     });
 
 });

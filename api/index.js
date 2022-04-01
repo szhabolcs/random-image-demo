@@ -34,9 +34,25 @@ app.post('/like/:id', async function (req, res) {
     }
     else{
       [rows, fields] = await conn.execute(`UPDATE likes SET nr = nr + 1 WHERE id  = (?)`, [id]);
-      console.log("updated " + id );
+      console.log("Updated: " + id );
     }
     res.sendStatus(200);
+});
+
+app.post('/unlike/:id', async function (req, res) {
+  let {id} = req.params;
+  let rows, fields;
+  [rows, fields] = await conn.execute(`SELECT id FROM likes WHERE id=?`, [id]);
+  //TODO: check if id exists
+  if(rows.length === 0){
+      [rows, fields] = await conn.execute(`INSERT INTO likes (id,nr) VALUES (?,?)`, [id, 1]);
+      console.log("Error " + id );
+  }
+  else{
+    [rows, fields] = await conn.execute(`UPDATE likes SET nr = nr - 1 WHERE id  = (?)`, [id]);
+    console.log("Updated: " + id );
+  }
+  res.sendStatus(200);
 });
 
 app.get('/all-likes', async (req, res) => {

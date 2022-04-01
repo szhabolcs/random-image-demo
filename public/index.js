@@ -19,16 +19,15 @@ $(document).ready(function() {
                     }
                     $("#result").append(`
                         <div class="image">
-                            <img src="${photo.urls.regular}"/>
-                            <button class="heart"><i class="fa fa-heart"></button>
-                        </div>
-                        <div>
+                            <div class="image-wrapper">
+                                <img src="${photo.urls.regular}"/>
+                                <button class="heart"><i class="fa-solid fa-heart"></i></button>
+                            </div>
                             <ul>
                                 <li> likes: ${photo.likes} </li>
                                 <li> description: ${description} </li>
                             </ul>
                         </div>
-    
                         `);
                 });
             }

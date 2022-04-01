@@ -7,10 +7,6 @@
     padding: 40px;
 }
 
-.fa-heart:before {
-    display: none;
-}
-
 .flex-container {
     display: flex;
     position: sticky;
@@ -24,16 +20,17 @@
     position: absolute;
 }
 
-.image {
+.image-wrapper {
     position: relative;
-    display: inline;
 }
 
-.image:hover .heart {
+.image-wrapper:hover .heart {
     display: block;
     position: absolute;
-    top: 50%;
+    margin: 0px;
     left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 button {
